@@ -1,18 +1,19 @@
 package Logica;
 
-
+import java.util.ArrayList;
 
 public class Usuario {
 	private String nombre;
 	private String telefono;
 	private String correo;
-	private int idUsuario;
+	private ArrayList<Prestamo> itemsPrestados;
 	
-	public Usuario(String nombre, String telefono, String correo, int idUsuario) {
+	
+	public Usuario(String nombre, String telefono, String correo) {
 		this.correo = correo;
-		this.idUsuario = idUsuario;
 		this.nombre = nombre;
 		this.telefono = telefono;
+		this.itemsPrestados = new ArrayList<>();
 		
 	}
 	
@@ -34,10 +35,15 @@ public class Usuario {
 	public void setCorreo(String correo) {
 		this.correo = correo;
 	}
-	public int getIdUsuario() {
-		return idUsuario;
+	public void agregarPrestamo(Prestamo nuevoPrestamo) {
+		itemsPrestados.add(nuevoPrestamo);
 	}
-	
+	public void eliminarPrestamo(int pos) {
+		itemsPrestados.remove(pos);
+	}
+	public ArrayList<Prestamo> getPrestamos() {
+		return itemsPrestados;
+	}
 	
 	
 }
