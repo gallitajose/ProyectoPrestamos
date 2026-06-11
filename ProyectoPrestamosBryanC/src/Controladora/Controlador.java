@@ -1,6 +1,8 @@
 package Controladora;
 
 import java.util.ArrayList;
+import java.util.Date;
+
 import Logica.Alerta;
 import Logica.Categoria;
 import Logica.Item;
@@ -91,5 +93,77 @@ public class Controlador {
         return categorias.get(nombre);
     }
     
-    //falta tipo, prestamos y alertas
+    
+    
+    
+    public void crearTipo(Tipo tipo) {
+        if (!tipos.containsKey(tipo.getDescripcion())) {
+            tipos.put(tipo.getDescripcion(), tipo);
+        }
+    }
+
+    public void editarTipo(String descripcion, Tipo tipo) {
+        tipos.put(descripcion, tipo);
+    }
+
+    public void borrarTipo(String descripcion) {
+        tipos.remove(descripcion);
+    }
+
+    public Tipo buscarTipo(String descripcion) {
+        return tipos.get(descripcion);
+    }
+    
+    
+    public void hacerPrestamo(String telefono, int idPrestamo) {
+        Usuario usuario = usuarios.get(telefono);
+        Prestamo nuevo = new Prestamo(idPrestamo, new Date(), usuario, null);
+        prestamos.put(idPrestamo, nuevo);
+        usuario.agregarPrestamo(nuevo);
+    }
+
+    public void agregarItemAPrestamo(int idPrestamo, int idItem) {
+        Prestamo prestamo = prestamos.get(idPrestamo);
+        Item item = items.get(idItem);
+        prestamo.agregarItem(item);
+    }
+
+    public void eliminarItemDePrestamo(int idPrestamo, int idItem) {
+        Prestamo prestamo = prestamos.get(idPrestamo);
+        prestamo.eliminarItem(idItem);
+    }
+
+    public void retornarItemPrestamo(int idPrestamo, int idItem) {
+        Prestamo prestamo = prestamos.get(idPrestamo);
+        prestamo.eliminarItem(idItem);
+    }
+
+    public void terminarPrestamo(int idPrestamo) {
+        prestamos.remove(idPrestamo);
+    }
+    
+    public void agregarAlertaPrestamo(int idPrestamo, Alerta alerta) {
+        Prestamo prestamo = prestamos.get(idPrestamo);
+        prestamo.setAlerta(alerta);
+    }
+    
+    public Map<String, Usuario> listarUsuarios() {
+        return usuarios;
+    }
+
+    public Map<Integer, Item> listarItems() {
+        return items;
+    }
+
+    public Map<String, Categoria> listarCategorias() {
+        return categorias;
+    }
+
+    public Map<String, Tipo> listarTipos() {
+        return tipos;
+    }
+
+    public Map<Integer, Prestamo> listarPrestamos() {
+        return prestamos;
+    }
 }

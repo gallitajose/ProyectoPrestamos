@@ -38,8 +38,8 @@ public class Usuario {
 	public void agregarPrestamo(Prestamo nuevoPrestamo) {
 		itemsPrestados.add(nuevoPrestamo);
 	}
-	public void eliminarPrestamo(int pos) {
-		itemsPrestados.remove(pos);
+	public void eliminarPrestamo(int idPrestamo) {
+	    itemsPrestados.removeIf(p -> p.getIdPrestamo() == idPrestamo);
 	}
 	public ArrayList<Prestamo> getPrestamos() {
 		return itemsPrestados;

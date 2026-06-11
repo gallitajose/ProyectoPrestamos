@@ -24,6 +24,14 @@ public class Prestamo {
 		
 	}
 
+	public int getIdPrestamo() {
+	    return idPrestamo;
+	}
+
+	public Date getFecha() {
+	    return fecha;
+	}
+	
 	public Usuario getUsuario() {
 		return usuario;
 	}
