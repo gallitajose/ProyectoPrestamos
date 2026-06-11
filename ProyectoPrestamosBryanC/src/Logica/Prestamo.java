@@ -11,11 +11,16 @@ public class Prestamo {
 	private Date fecha;
 	private Usuario usuario;
 	private Alerta alerta;
+	private Map<Integer, Item> items = new HashMap<>() ;
 	
-	//private Map<int, item> item = new HashMap<>() ;
 	
-	
-	public Prestamo(int idPrestamo, Date fecha, Usuario usuario){
+	public Prestamo(int idPrestamo, Date fecha, Usuario usuario, Alerta alerta){
+		this.idPrestamo = idPrestamo;
+		this.usuario = usuario;
+		this.fecha = fecha;
+		this.alerta = alerta;
+		this.items = new HashMap<>();
+		
 		
 	}
 
@@ -26,12 +31,26 @@ public class Prestamo {
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
 	}
-	public void agregarItem() {
-		
+	
+	public void agregarItem(Item nuevoItem) {
+	    items.put(nuevoItem.getCodigo(), nuevoItem);
 	}
-	public void eliminarItem() {
-		
+
+	public void eliminarItem(int codigo) {
+	    items.remove(codigo);
 	}
-	//set y get alerta
+
+	public Map<Integer, Item> getItems() {
+	    return items;
+	}
+
+	public Alerta getAlerta() {
+		return alerta;
+	}
+
+	public void setAlerta(Alerta alerta) {
+		this.alerta = alerta;
+	}
+	
 	
 }
