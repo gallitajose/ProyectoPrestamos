@@ -10,6 +10,7 @@ public class Categoria {
 	
 	public Categoria(String nombre) {
 		this.nombre = nombre;
+		this.items = new HashMap<>();
 	}
 
 	public String getNombre() {
@@ -18,6 +19,18 @@ public class Categoria {
 
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
+	}
+	
+	public void agregarItem(Item item) {
+	    items.put(item.getCodigo(), item);
+	}
+
+	public void eliminarItem(int codigo) {
+	    items.remove(codigo);
+	}
+
+	public Map<Integer, Item> getItems() {
+	    return items;
 	}
 
 	
