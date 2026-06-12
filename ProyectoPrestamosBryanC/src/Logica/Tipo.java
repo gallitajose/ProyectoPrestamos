@@ -1,5 +1,7 @@
 package Logica;
 
+import java.util.HashMap;
+
 public class Tipo {
 	private String descripcion;
 	

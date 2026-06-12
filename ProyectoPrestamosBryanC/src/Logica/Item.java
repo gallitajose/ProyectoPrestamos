@@ -66,6 +66,6 @@ public class Item {
 	    return categorias;
 	}
 	
-	//get set prestamo.
+	
 
 }

@@ -6,14 +6,14 @@ public class Usuario {
 	private String nombre;
 	private String telefono;
 	private String correo;
-	private ArrayList<Prestamo> itemsPrestados;
+	private ArrayList<Prestamo> prestamos;
 	
 	
 	public Usuario(String nombre, String telefono, String correo) {
 		this.correo = correo;
 		this.nombre = nombre;
 		this.telefono = telefono;
-		this.itemsPrestados = new ArrayList<>();
+		this.prestamos = new ArrayList<>();
 		
 	}
 	
@@ -36,13 +36,13 @@ public class Usuario {
 		this.correo = correo;
 	}
 	public void agregarPrestamo(Prestamo nuevoPrestamo) {
-		itemsPrestados.add(nuevoPrestamo);
+		prestamos.add(nuevoPrestamo);
 	}
-	public void eliminarPrestamo(int idPrestamo) {
-	    itemsPrestados.removeIf(p -> p.getIdPrestamo() == idPrestamo);
+	public void eliminarPrestamo(int pos) {
+		prestamos.remove(pos);
 	}
 	public ArrayList<Prestamo> getPrestamos() {
-		return itemsPrestados;
+		return prestamos;
 	}
 	
 	

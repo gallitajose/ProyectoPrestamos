@@ -1,13 +1,17 @@
 package Logica;
 
+import java.util.Date;
+
 public class Alerta {
 
 	private String mensaje;
-	private int frecuencia;
+	private int frecuencia; 
+	private Date fecha;
 	
-	public Alerta(String mensaje, int frecuencia) {
+	public Alerta(String mensaje, int frecuencia, Date fecha) {
 		this.frecuencia = frecuencia;
 		this.mensaje = mensaje;
+		this.fecha = fecha;
 	}
 
 	public String getMensaje() {
@@ -24,6 +28,14 @@ public class Alerta {
 
 	public void setFrecuencia(int frecuencia) {
 		this.frecuencia = frecuencia;
+	}
+
+	public Date getFecha() {
+		return fecha;
+	}
+
+	public void setFecha(Date fecha) {
+		this.fecha = fecha;
 	}
 	
 	//hacer el toString
