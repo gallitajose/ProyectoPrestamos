@@ -2,11 +2,13 @@ package Interfaz;
 
 import java.awt.EventQueue;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import java.awt.BorderLayout;
 import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
 import Controladora.Controlador;
@@ -14,6 +16,8 @@ import Logica.Item;
 
 import java.util.List;
 import javax.swing.JScrollPane;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Principal {
 	private JFrame frame;
@@ -66,6 +70,11 @@ public class Principal {
 		pItem.add(crearI);
 
 		JButton borrarI = new JButton("Borrar");
+		borrarI.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				borrarItem();
+			}
+		});
 		borrarI.setBounds(10, 45, 89, 23);
 		pItem.add(borrarI);
 
@@ -91,7 +100,7 @@ public class Principal {
 			}
 		) {
 			Class[] columnTypes = new Class[] {
-				String.class, String.class, String.class, Object.class
+				String.class, String.class, Integer.class, Object.class
 			};
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
@@ -101,6 +110,7 @@ public class Principal {
 		tablaItems.getColumnModel().getColumn(1).setPreferredWidth(167);
 		tablaItems.getColumnModel().getColumn(2).setPreferredWidth(148);
 		tablaItems.getColumnModel().getColumn(3).setPreferredWidth(139);
+		tablaItems.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		JPanel pPersona = new JPanel();
 		tabbedPane.addTab("Persona", null, pPersona, null);
@@ -121,6 +131,40 @@ public class Principal {
 	private void crearItem() {
 		CrearItem dialog = new CrearItem(frame);
 		dialog.setVisible(true);
+		
+	}
+	
+	private void borrarItem() {
+		int numeroFila = tablaItems.getSelectedRow();
+		if (numeroFila == -1) {
+			JOptionPane.showMessageDialog(
+					frame, "Debe seleccionar al menos 1 item.", "Error", JOptionPane.ERROR_MESSAGE);
+		} else {
+			DefaultTableModel model = (DefaultTableModel) tablaItems.getModel();
+		    int codigo = (int) model.getValueAt(numeroFila, 2);
+		    String nombreItem = (String) model.getValueAt(numeroFila, 0);
+
+		    int respuesta = JOptionPane.showConfirmDialog(
+		        frame,
+		        "Se eliminará el Item: " + nombreItem ,
+		        "Confirmar",
+		        JOptionPane.YES_NO_OPTION );
+		    if (respuesta == JOptionPane.YES_OPTION) {
+		        Controlador control = Controlador.getInstancia();
+		        try {
+		            control.borrarItem(codigo);
+		            cargarItems();
+		        } catch (Exception e) {
+		            JOptionPane.showMessageDialog(
+		                frame,
+		                "Error al borrar Item: " + e.toString(),
+		                "Error",
+		                JOptionPane.ERROR_MESSAGE
+		            );
+			
+		        }
+		    }
+		}
 	}
 	private void cargarItems() {
 	    Controlador ctrl = Controlador.getInstancia();
