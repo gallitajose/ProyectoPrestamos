@@ -66,7 +66,11 @@ public class Principal {
 
 		crearI = new JButton("Crear");
 		crearI.setBounds(10, 11, 89, 23);
-		crearI.addActionListener(e -> crearItem());
+		crearI.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				crearItem();
+			}
+		});
 		pItem.add(crearI);
 
 		JButton borrarI = new JButton("Borrar");
@@ -79,6 +83,11 @@ public class Principal {
 		pItem.add(borrarI);
 
 		JButton modificarI = new JButton("Modificar");
+		modificarI.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				modificarItem();
+			}
+		});
 		modificarI.setBounds(10, 79, 89, 23);
 		pItem.add(modificarI);
 
@@ -126,6 +135,22 @@ public class Principal {
 
 		JPanel pReportes = new JPanel();
 		tabedMain.addTab("Reportes", null, pReportes, null);
+	}
+	private void modificarItem() {
+	    int numeroFila = tablaItems.getSelectedRow();
+	    if (numeroFila == -1) {
+	        JOptionPane.showMessageDialog(frame, "Debe seleccionar un ítem.", "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+	    int codigo = (int) ((DefaultTableModel) tablaItems.getModel()).getValueAt(numeroFila, 2);
+	    try {
+	        Item item = Controlador.getInstancia().buscarItem(codigo);
+	        ModificarItem dialog = new ModificarItem(frame, item);
+	        dialog.setVisible(true);
+	        cargarItems();
+	    } catch (Exception e) {
+	        JOptionPane.showMessageDialog(frame, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	    }
 	}
 
 	private void crearItem() {
