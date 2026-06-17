@@ -31,6 +31,11 @@ public class Principal {
 	private JButton modificarT;
 	private JButton consultT;
 	private JScrollPane scrollPane;
+	private JButton crearC;
+	private JButton borrarC;
+	private JButton modiC;
+	private JTable tablaCategorias;
+	private JScrollPane scrollPane_1;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -192,12 +197,111 @@ public class Principal {
 
 		JPanel pCategoria = new JPanel();
 		tabbedPane.addTab("Categoria", null, pCategoria, null);
+		pCategoria.setLayout(null);
+		
+		crearC = new JButton("Crear");
+		crearC.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				crearCategoria();
+			}
+		});
+		crearC.setBounds(10, 33, 89, 23);
+		pCategoria.add(crearC);
+		
+		borrarC = new JButton("Borrar");
+		borrarC.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				borrarCategoria();
+			}
+		});
+		borrarC.setBounds(10, 92, 89, 23);
+		pCategoria.add(borrarC);
+		
+		modiC = new JButton("Modificar");
+		modiC.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				modificarCategoria();
+			}
+		});
+		modiC.setBounds(10, 150, 89, 23);
+		pCategoria.add(modiC);
+		
+		scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(136, 37, 351, 229);
+		pCategoria.add(scrollPane_1);
+		
+		tablaCategorias = new JTable();
+		tablaCategorias.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"Nombre"
+			}
+		));
+		scrollPane_1.setViewportView(tablaCategorias);
 
 		JPanel pPrestamos = new JPanel();
 		tabedMain.addTab("Prestamos", null, pPrestamos, null);
 
 		JPanel pReportes = new JPanel();
 		tabedMain.addTab("Reportes", null, pReportes, null);
+	}
+	private void crearCategoria() {
+	    String nombre = JOptionPane.showInputDialog(frame, "Ingrese el nombre de la categoría:");
+	    if (nombre != null && !nombre.trim().isEmpty()) {
+	        try {
+	            Controlador.getInstancia().crearCategoria(nombre.trim());
+	            cargarCategorias();
+	        } catch (Exception e) {
+	            JOptionPane.showMessageDialog(frame, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        }
+	    }
+	}
+
+	private void modificarCategoria() {
+	    int fila = tablaCategorias.getSelectedRow();
+	    if (fila == -1) {
+	        JOptionPane.showMessageDialog(frame, "Debe seleccionar una categoría.", "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+	    String nombreActual = (String) ((DefaultTableModel) tablaCategorias.getModel()).getValueAt(fila, 0);
+	    String nuevoNombre = JOptionPane.showInputDialog(frame, "Cambiar nombre:", nombreActual);
+	    if (nuevoNombre != null && !nuevoNombre.trim().isEmpty()) {
+	        try {
+	            Controlador.getInstancia().editarCategoria(nombreActual, nuevoNombre.trim());
+	            cargarCategorias();
+	        } catch (Exception e) {
+	            JOptionPane.showMessageDialog(frame, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        }
+	    }
+	}
+
+	private void borrarCategoria() {
+	    int fila = tablaCategorias.getSelectedRow();
+	    if (fila == -1) {
+	        JOptionPane.showMessageDialog(frame, "Debe seleccionar una categoría.", "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+	    String nombre = (String) ((DefaultTableModel) tablaCategorias.getModel()).getValueAt(fila, 0);
+	    int respuesta = JOptionPane.showConfirmDialog(
+	        frame, "Se va a eliminar la categoría: " + nombre,
+	        "Confirmar", JOptionPane.YES_NO_OPTION);
+	    if (respuesta == JOptionPane.YES_OPTION) {
+	        try {
+	            Controlador.getInstancia().borrarCategoria(nombre);
+	            cargarCategorias();
+	        } catch (Exception e) {
+	            JOptionPane.showMessageDialog(frame, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        }
+	    }
+	}
+
+	private void cargarCategorias() {
+	    DefaultTableModel model = (DefaultTableModel) tablaCategorias.getModel();
+	    model.setRowCount(0);
+	    for (Logica.Categoria c : Controlador.getInstancia().listarCategorias().values()) {
+	        model.addRow(new Object[] { c.getNombre() });
+	    }
 	}
 	private void crearTipo() {
 	    String descripcion = JOptionPane.showInputDialog(frame, "ingrese la descripcion del tipo: ");
