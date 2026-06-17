@@ -13,6 +13,7 @@ import javax.swing.table.DefaultTableModel;
 
 import Controladora.Controlador;
 import Logica.Item;
+import Logica.Tipo;
 
 import java.util.List;
 import javax.swing.JScrollPane;
@@ -24,6 +25,12 @@ public class Principal {
 	private JButton crearI;
 	private JTable tablaItems;
 	private JScrollPane scrollPaneItems;
+	private JTable tablaTipos;
+	private JButton crearT;
+	private JButton borrarT;
+	private JButton modificarT;
+	private JButton consultT;
+	private JScrollPane scrollPane;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -103,6 +110,9 @@ public class Principal {
 		scrollPaneItems.setViewportView(tablaItems);
 		tablaItems.setModel(new DefaultTableModel(
 			new Object[][] {
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
 			},
 			new String[] {
 				"Nombre", "Descripcion", "Codigo", "Tipo"
@@ -126,6 +136,59 @@ public class Principal {
 
 		JPanel pTipo = new JPanel();
 		tabbedPane.addTab("Tipo", null, pTipo, null);
+		pTipo.setLayout(null);
+		
+		crearT = new JButton("Crear");
+		crearT.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				crearTipo();
+			}
+		});
+		crearT.setBounds(10, 30, 89, 23);
+		pTipo.add(crearT);
+		
+		borrarT = new JButton("Borrar");
+		borrarT.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				borrarTipo();
+			}
+		});
+		borrarT.setBounds(10, 95, 89, 23);
+		pTipo.add(borrarT);
+		
+		modificarT = new JButton("Modificar");
+		modificarT.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				modificarTipo();
+			}
+		});
+		modificarT.setBounds(10, 163, 89, 23);
+		pTipo.add(modificarT);
+		
+		consultT = new JButton("Consultar");
+		consultT.setBounds(10, 220, 89, 23);
+		pTipo.add(consultT);
+		
+		scrollPane = new JScrollPane();
+		scrollPane.setBounds(149, 34, 564, 217);
+		pTipo.add(scrollPane);
+		
+		tablaTipos = new JTable();
+		tablaTipos.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"Nombre"
+			}
+		) {
+			Class[] columnTypes = new Class[] {
+				String.class
+			};
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+		});
+		scrollPane.setViewportView(tablaTipos);
 
 		JPanel pCategoria = new JPanel();
 		tabbedPane.addTab("Categoria", null, pCategoria, null);
@@ -135,6 +198,63 @@ public class Principal {
 
 		JPanel pReportes = new JPanel();
 		tabedMain.addTab("Reportes", null, pReportes, null);
+	}
+	private void crearTipo() {
+	    String descripcion = JOptionPane.showInputDialog(frame, "ingrese la descripcion del tipo: ");
+	    if (descripcion != null && !descripcion.trim().isEmpty()) {
+	        try {
+	            Controlador.getInstancia().crearTipo(descripcion.trim());
+	            cargarTipos();
+	        } catch (Exception e) {
+	            JOptionPane.showMessageDialog(frame, e.getMessage(), "error:", JOptionPane.ERROR_MESSAGE);
+	        }
+	    }
+	}
+
+	private void modificarTipo() {
+	    int fila = tablaTipos.getSelectedRow();
+	    if (fila == -1) {
+	        JOptionPane.showMessageDialog(frame, "debe seleccionar un tipo", "error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+	    String descripcionActual = (String) ((DefaultTableModel) tablaTipos.getModel()).getValueAt(fila, 0);
+	    String nuevaDescripcion = JOptionPane.showInputDialog(frame, "cambiar descripcion:", descripcionActual);
+	    if (nuevaDescripcion != null && !nuevaDescripcion.trim().isEmpty()) {
+	        try {
+	            Controlador.getInstancia().editarTipo(descripcionActual, nuevaDescripcion.trim());
+	            cargarTipos();
+	        } catch (Exception e) {
+	            JOptionPane.showMessageDialog(frame, e.getMessage(), "error", JOptionPane.ERROR_MESSAGE);
+	        }
+	    }
+	}
+
+	private void borrarTipo() {
+	    int fila = tablaTipos.getSelectedRow();
+	    if (fila == -1) {
+	        JOptionPane.showMessageDialog(frame, "debe seleccionar un tipo.", "error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+	    String descripcion = (String) ((DefaultTableModel) tablaTipos.getModel()).getValueAt(fila, 0);
+	    int respuesta = JOptionPane.showConfirmDialog(
+	        frame, "se va a eliminar el tipo: " + descripcion,
+	        "Seguro?", JOptionPane.YES_NO_OPTION);
+	    if (respuesta == JOptionPane.YES_OPTION) {
+	        try {
+	            Controlador.getInstancia().borrarTipo(descripcion);
+	            cargarTipos();
+	        } catch (Exception e) {
+	            JOptionPane.showMessageDialog(frame, e.getMessage(), "error", JOptionPane.ERROR_MESSAGE);
+	        }
+	    }
+	}
+
+	private void cargarTipos() {
+	    DefaultTableModel model = (DefaultTableModel) tablaTipos.getModel();
+	    model.setRowCount(0);
+	    for (Tipo t : Controlador.getInstancia().listarTipos().values()) {
+	        model.addRow(new Object[] { t.getDescripcion() });
+	    }
 	}
 	private void modificarItem() {
 	    int numeroFila = tablaItems.getSelectedRow();
@@ -156,7 +276,7 @@ public class Principal {
 	private void crearItem() {
 		CrearItem dialog = new CrearItem(frame);
 		dialog.setVisible(true);
-		
+		cargarItems();
 	}
 	
 	private void borrarItem() {
@@ -171,8 +291,8 @@ public class Principal {
 
 		    int respuesta = JOptionPane.showConfirmDialog(
 		        frame,
-		        "Se eliminará el Item: " + nombreItem ,
-		        "Confirmar",
+		        "se va a eliminar el Item: " + nombreItem ,
+		        "confirmar",
 		        JOptionPane.YES_NO_OPTION );
 		    if (respuesta == JOptionPane.YES_OPTION) {
 		        Controlador control = Controlador.getInstancia();
@@ -182,7 +302,7 @@ public class Principal {
 		        } catch (Exception e) {
 		            JOptionPane.showMessageDialog(
 		                frame,
-		                "Error al borrar Item: " + e.toString(),
+		                "Error borrando item: " + e.toString(),
 		                "Error",
 		                JOptionPane.ERROR_MESSAGE
 		            );
