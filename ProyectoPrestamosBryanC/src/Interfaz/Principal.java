@@ -21,6 +21,7 @@ import java.util.List;
 import javax.swing.JScrollPane;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JTextArea;
 
 public class Principal {
 	private JFrame frame;
@@ -44,6 +45,11 @@ public class Principal {
 	private JButton consultP;
 	private JButton modiP;
 	private JButton borrarP;
+	private JButton reportTipo;
+	private JButton reportCategoria;
+	private JButton reportItem;
+	private JButton reportUsuario;
+	private JTextArea areaReporte;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -314,6 +320,48 @@ public class Principal {
 
 		JPanel pReportes = new JPanel();
 		tabedMain.addTab("Reportes", null, pReportes, null);
+		pReportes.setLayout(null);
+		
+		areaReporte = new JTextArea();
+		areaReporte.setBounds(139, 11, 589, 329);
+		pReportes.add(areaReporte);
+
+		reportUsuario = new JButton("Usuario");
+		reportUsuario.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				areaReporte.setText(Controlador.getInstancia().reporteUsuario());
+			}
+		});
+		reportUsuario.setBounds(10, 37, 89, 23);
+		pReportes.add(reportUsuario);
+		
+		reportItem = new JButton("Item");
+		reportItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				areaReporte.setText(Controlador.getInstancia().reporteItem());
+			}
+		});
+		reportItem.setBounds(10, 98, 89, 23);
+		pReportes.add(reportItem);
+		
+		reportCategoria = new JButton("Categoria");
+		reportCategoria.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				areaReporte.setText(Controlador.getInstancia().reporteCategoria());
+			}
+		});
+		reportCategoria.setBounds(10, 168, 89, 23);
+		pReportes.add(reportCategoria);
+		
+		reportTipo = new JButton("Tipo");
+		reportTipo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				areaReporte.setText(Controlador.getInstancia().reporteTipo());
+			}
+		});
+		reportTipo.setBounds(10, 243, 89, 23);
+		pReportes.add(reportTipo);
+
 		cargarPersonas();
 		cargarCategorias();
 	}
