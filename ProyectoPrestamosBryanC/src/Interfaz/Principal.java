@@ -14,6 +14,8 @@ import javax.swing.table.DefaultTableModel;
 import Controladora.Controlador;
 import Logica.Item;
 import Logica.Tipo;
+import Logica.Usuario;
+import Logica.Prestamo;
 
 import java.util.List;
 import javax.swing.JScrollPane;
@@ -36,6 +38,12 @@ public class Principal {
 	private JButton modiC;
 	private JTable tablaCategorias;
 	private JScrollPane scrollPane_1;
+	private JButton crearP;
+	private JTable table;
+	private JScrollPane scrollPane_2;
+	private JButton consultP;
+	private JButton modiP;
+	private JButton borrarP;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -138,6 +146,67 @@ public class Principal {
 
 		JPanel pPersona = new JPanel();
 		tabbedPane.addTab("Persona", null, pPersona, null);
+		pPersona.setLayout(null);
+		
+		crearP = new JButton("Crear");
+		crearP.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				crearPersona();
+			}
+		});
+		crearP.setBounds(10, 47, 89, 23);
+		pPersona.add(crearP);
+		
+		borrarP = new JButton("Borrar");
+		borrarP.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				borrarPersona();
+			}
+		});
+		borrarP.setBounds(10, 107, 89, 23);
+		pPersona.add(borrarP);
+		
+		modiP = new JButton("Modificar");
+		modiP.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				modificarPersona();
+			}
+		});
+		modiP.setBounds(10, 168, 89, 23);
+		pPersona.add(modiP);
+		
+		consultP = new JButton("Consultar");
+		consultP.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				consultarPersona();
+			}
+		});
+		consultP.setBounds(10, 238, 89, 23);
+		pPersona.add(consultP);
+		
+		scrollPane_2 = new JScrollPane();
+		scrollPane_2.setBounds(158, 51, 495, 216);
+		pPersona.add(scrollPane_2);
+		
+		table = new JTable();
+		table.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"Nombre", "Telefono", "Correo"
+			}
+		) {
+			Class[] columnTypes = new Class[] {
+				String.class, String.class, String.class
+			};
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+		});
+		table.getColumnModel().getColumn(0).setPreferredWidth(174);
+		table.getColumnModel().getColumn(1).setPreferredWidth(155);
+		table.getColumnModel().getColumn(2).setPreferredWidth(220);
+		scrollPane_2.setViewportView(table);
 
 		JPanel pTipo = new JPanel();
 		tabbedPane.addTab("Tipo", null, pTipo, null);
@@ -245,6 +314,91 @@ public class Principal {
 
 		JPanel pReportes = new JPanel();
 		tabedMain.addTab("Reportes", null, pReportes, null);
+		cargarPersonas();
+		cargarCategorias();
+	}
+	private void crearPersona() {
+		CrearUsuario dialog = new CrearUsuario(frame);
+		dialog.setVisible(true);
+		cargarPersonas();
+	}
+	private void modificarPersona() {
+	    int fila = table.getSelectedRow();
+	    if (fila == -1) {
+	        JOptionPane.showMessageDialog(frame, "debe seleccionar una persona.", "error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+	    String telefono = (String) ((DefaultTableModel) table.getModel()).getValueAt(fila, 1);
+	    try {
+	        Logica.Usuario usuario = Controlador.getInstancia().buscarPersona(telefono);
+	        ModificarUsuario dialog = new ModificarUsuario(frame, usuario);
+	        dialog.setVisible(true);
+	        cargarPersonas();
+	    } catch (Exception e) {
+	        JOptionPane.showMessageDialog(frame, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	    }
+	}
+
+	private void borrarPersona() {
+	    int fila = table.getSelectedRow();
+	    if (fila == -1) {
+	        JOptionPane.showMessageDialog(frame, "Debe seleccionar una persona.", "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+	    String nombre = (String) ((DefaultTableModel) table.getModel()).getValueAt(fila, 0);
+	    String telefono = (String) ((DefaultTableModel) table.getModel()).getValueAt(fila, 1);
+	    int respuesta = JOptionPane.showConfirmDialog(
+	        frame, "Se va a eliminar la persona: " + nombre,
+	        "Confirmar", JOptionPane.YES_NO_OPTION);
+	    if (respuesta == JOptionPane.YES_OPTION) {
+	        try {
+	            Controlador.getInstancia().borrarUsuario(telefono);
+	            cargarPersonas();
+	        } catch (Exception e) {
+	            JOptionPane.showMessageDialog(frame, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        }
+	    }
+	}
+
+	private void consultarPersona() {
+	    int fila = table.getSelectedRow();
+	    if (fila == -1) {
+	        JOptionPane.showMessageDialog(frame, "Debe seleccionar una persona.", "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+	    String telefono = (String) ((DefaultTableModel) table.getModel()).getValueAt(fila, 1);
+	    try {
+	        Logica.Usuario usuario = Controlador.getInstancia().buscarPersona(telefono);
+	        StringBuilder sb = new StringBuilder();
+	        sb.append("Nombre: ").append(usuario.getNombre()).append("\n");
+	        sb.append("Teléfono: ").append(usuario.getTelefono()).append("\n");
+	        sb.append("Correo: ").append(usuario.getCorreo()).append("\n\n");
+
+	        if (usuario.getPrestamos().isEmpty()) {
+	            sb.append("No tiene préstamos activos.");
+	        } else {
+	            sb.append("Préstamos activos:\n");
+	            for (Logica.Prestamo p : usuario.getPrestamos()) {
+	                sb.append("  - Préstamo #").append(p.getIdPrestamo());
+	                sb.append(" | Fecha: ").append(p.getFecha()).append("\n");
+	            }
+	        }
+	        JOptionPane.showMessageDialog(frame, sb.toString(), "Consulta de persona", JOptionPane.INFORMATION_MESSAGE);
+	    } catch (Exception e) {
+	        JOptionPane.showMessageDialog(frame, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	    }
+	}
+
+	private void cargarPersonas() {
+	    DefaultTableModel model = (DefaultTableModel) table.getModel();
+	    model.setRowCount(0);
+	    for (Logica.Usuario u : Controlador.getInstancia().listarUsuarios().values()) {
+	        model.addRow(new Object[] {
+	            u.getNombre(),
+	            u.getTelefono(),
+	            u.getCorreo()
+	        });
+	    }
 	}
 	private void crearCategoria() {
 	    String nombre = JOptionPane.showInputDialog(frame, "Ingrese el nombre de la categoría:");
