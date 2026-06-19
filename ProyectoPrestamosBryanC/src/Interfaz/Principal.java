@@ -50,6 +50,13 @@ public class Principal {
 	private JButton reportItem;
 	private JButton reportUsuario;
 	private JTextArea areaReporte;
+	private JTable table_1;
+	private JScrollPane scrollPane_3;
+	private JButton nuevoP;
+	private JButton agregarItem;
+	private JButton eliminarItem;
+	private JButton retornItem;
+	private JButton finalizar;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -317,6 +324,55 @@ public class Principal {
 
 		JPanel pPrestamos = new JPanel();
 		tabedMain.addTab("Prestamos", null, pPrestamos, null);
+		pPrestamos.setLayout(null);
+		
+		scrollPane_3 = new JScrollPane();
+		scrollPane_3.setBounds(187, 22, 561, 334);
+		pPrestamos.add(scrollPane_3);
+		
+		table_1 = new JTable();
+		table_1.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"ID", "Usuario", "Fecha"
+			}
+		) {
+			Class[] columnTypes = new Class[] {
+				String.class, Object.class, Object.class
+			};
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+		});
+		scrollPane_3.setViewportView(table_1);
+		
+		nuevoP = new JButton("Nuevo");
+		nuevoP.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				NuevoPrestamo dialog = new NuevoPrestamo(frame);
+			    dialog.setVisible(true);
+			    cargarPrestamos();
+			}
+		});
+		nuevoP.setBounds(10, 36, 155, 23);
+		pPrestamos.add(nuevoP);
+		
+		agregarItem = new JButton("Agregar Item");
+		agregarItem.setBounds(10, 90, 155, 23);
+		pPrestamos.add(agregarItem);
+		
+		eliminarItem = new JButton("Eliminar item");
+		eliminarItem.setBounds(10, 144, 155, 23);
+		pPrestamos.add(eliminarItem);
+		
+		retornItem = new JButton("Retornar itrem");
+		retornItem.setBounds(10, 202, 155, 23);
+		pPrestamos.add(retornItem);
+		
+		finalizar = new JButton("Finalizar");
+		finalizar.setBounds(10, 260, 155, 23);
+		pPrestamos.add(finalizar);
 
 		JPanel pReportes = new JPanel();
 		tabedMain.addTab("Reportes", null, pReportes, null);
@@ -364,6 +420,18 @@ public class Principal {
 
 		cargarPersonas();
 		cargarCategorias();
+		cargarPrestamos();
+	}
+	private void cargarPrestamos() {
+	    DefaultTableModel model = (DefaultTableModel) table_1.getModel();
+	    model.setRowCount(0);
+	    for (Prestamo p : Controlador.getInstancia().listarPrestamos().values()) {
+	        model.addRow(new Object[] {
+	            p.getIdPrestamo(),
+	            p.getUsuario().getNombre(),
+	            p.getFecha()
+	        });
+	    }
 	}
 	private void crearPersona() {
 		CrearUsuario dialog = new CrearUsuario(frame);

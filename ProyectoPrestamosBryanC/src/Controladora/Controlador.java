@@ -378,7 +378,15 @@ public class Controlador {
 
         return sb.toString();
     }
-
+    public Map<Integer, Item> listarItemsDisponibles() {
+        Map<Integer, Item> disponibles = new HashMap<>();
+        for (Item item : items.values()) {
+            if (!itemEnPrestamo(item.getCodigo())) {
+                disponibles.put(item.getCodigo(), item);
+            }
+        }
+        return disponibles;
+    }
     public String reporteItem() {
         StringBuilder sb = new StringBuilder();
         sb.append("=== Reporte por Ítem ===\n");
@@ -423,6 +431,10 @@ public class Controlador {
             });
 
         return sb.toString();
+    }
+    public int generarIdPrestamo() {
+        if (prestamos.isEmpty()) return 1;
+        return prestamos.keySet().stream().max(Integer::compareTo).get() + 1;
     }
 
     public String reporteTipo() {
