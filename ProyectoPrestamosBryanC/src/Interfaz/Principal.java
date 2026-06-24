@@ -359,18 +359,38 @@ public class Principal {
 		pPrestamos.add(nuevoP);
 		
 		agregarItem = new JButton("Agregar Item");
+		agregarItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				agregarItemPrestamo();
+			}
+		});
 		agregarItem.setBounds(10, 90, 155, 23);
 		pPrestamos.add(agregarItem);
 		
 		eliminarItem = new JButton("Eliminar item");
+		eliminarItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				eliminarItemPrestamo();
+			}
+		});
 		eliminarItem.setBounds(10, 144, 155, 23);
 		pPrestamos.add(eliminarItem);
 		
 		retornItem = new JButton("Retornar itrem");
+		retornItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				retornarItemPrestamo();
+			}
+		});
 		retornItem.setBounds(10, 202, 155, 23);
 		pPrestamos.add(retornItem);
 		
 		finalizar = new JButton("Finalizar");
+		finalizar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				finalizarPrestamo();
+			}
+		});
 		finalizar.setBounds(10, 260, 155, 23);
 		pPrestamos.add(finalizar);
 
@@ -432,6 +452,59 @@ public class Principal {
 	            p.getFecha()
 	        });
 	    }
+	}
+	private void finalizarPrestamo() {
+	    int fila = table_1.getSelectedRow();
+	    if (fila == -1) {
+	        JOptionPane.showMessageDialog(frame, "debe seleccionar un prestamo.", "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+	    int idPrestamo = (int) ((DefaultTableModel) table_1.getModel()).getValueAt(fila, 0);
+	    String usuario = (String) ((DefaultTableModel) table_1.getModel()).getValueAt(fila, 1);
+	    int respuesta = JOptionPane.showConfirmDialog(
+	        frame, "se va a terminar el prestamo: " + idPrestamo + " de: " + usuario,
+	        "confirmar", JOptionPane.YES_NO_OPTION);
+	    if (respuesta == JOptionPane.YES_OPTION) {
+	        try {
+	            Controlador.getInstancia().terminarPrestamo(idPrestamo);
+	            cargarPrestamos();
+	        } catch (Exception e) {
+	            JOptionPane.showMessageDialog(frame, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        }
+	    }
+	}
+	private void agregarItemPrestamo() {
+	    int fila = table_1.getSelectedRow();
+	    if (fila == -1) {
+	        JOptionPane.showMessageDialog(frame, "debe seleccionar un prestamo", "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+	    int idPrestamo = (int) ((DefaultTableModel) table_1.getModel()).getValueAt(fila, 0);
+	    AgregarItemAPrestamo dialog = new AgregarItemAPrestamo(frame, idPrestamo);
+	    dialog.setVisible(true);
+	    cargarPrestamos();
+	}
+	private void eliminarItemPrestamo() {
+	    int fila = table_1.getSelectedRow();
+	    if (fila == -1) {
+	        JOptionPane.showMessageDialog(frame, "debe seleccionar un prestamo", "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+	    int idPrestamo = (int) ((DefaultTableModel) table_1.getModel()).getValueAt(fila, 0);
+	    EliminarItemPrestamo dialog = new EliminarItemPrestamo(frame, idPrestamo);
+	    dialog.setVisible(true);
+	    cargarPrestamos();
+	}
+	private void retornarItemPrestamo() {
+	    int fila = table_1.getSelectedRow();
+	    if (fila == -1) {
+	        JOptionPane.showMessageDialog(frame, "debe seleccionar un prestamo", "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+	    int idPrestamo = (int) ((DefaultTableModel) table_1.getModel()).getValueAt(fila, 0);
+	    retornarItemDePrestamo dialog = new retornarItemDePrestamo(frame, idPrestamo);
+	    dialog.setVisible(true);
+	    cargarPrestamos();
 	}
 	private void crearPersona() {
 		CrearUsuario dialog = new CrearUsuario(frame);

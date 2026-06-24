@@ -267,7 +267,13 @@ public class Controlador {
     }
 
 
-
+    public Prestamo buscarPrestamo(int idPrestamo) throws Exception {
+        Prestamo prestamo = prestamos.get(idPrestamo);
+        if (prestamo == null) {
+            throw new Exception("Error al buscar préstamo: no se encontró el préstamo");
+        }
+        return prestamo;
+    }
 
     public void hacerPrestamo(String telefono, int idPrestamo) throws Exception {
         Usuario usuario = usuarios.get(telefono);
