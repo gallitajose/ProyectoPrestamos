@@ -10,12 +10,14 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
+import java.util.stream.Collectors;
 
 import Controladora.Controlador;
 import Logica.Item;
 import Logica.Tipo;
 import Logica.Usuario;
 import Logica.Prestamo;
+import Logica.Categoria;
 
 import java.util.List;
 import javax.swing.JScrollPane;
@@ -143,25 +145,26 @@ public class Principal {
 		scrollPaneItems.setViewportView(tablaItems);
 		tablaItems.setModel(new DefaultTableModel(
 			new Object[][] {
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
+				{null, null, null, null, null},
+				{null, null, null, null, null},
+				{null, null, null, null, null},
 			},
 			new String[] {
-				"Nombre", "Descripcion", "Codigo", "Tipo"
+				"Nombre", "Descripcion", "Codigo", "Tipo", "Categorias"
 			}
 		) {
 			Class[] columnTypes = new Class[] {
-				String.class, String.class, Integer.class, Object.class
+				String.class, String.class, Integer.class, Object.class, String.class
 			};
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
 		});
-		tablaItems.getColumnModel().getColumn(0).setPreferredWidth(168);
-		tablaItems.getColumnModel().getColumn(1).setPreferredWidth(167);
-		tablaItems.getColumnModel().getColumn(2).setPreferredWidth(148);
+		tablaItems.getColumnModel().getColumn(0).setPreferredWidth(96);
+		tablaItems.getColumnModel().getColumn(1).setPreferredWidth(113);
+		tablaItems.getColumnModel().getColumn(2).setPreferredWidth(106);
 		tablaItems.getColumnModel().getColumn(3).setPreferredWidth(139);
+		tablaItems.getColumnModel().getColumn(4).setPreferredWidth(164);
 		tablaItems.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		JPanel pPersona = new JPanel();
@@ -613,7 +616,7 @@ public class Principal {
 	private void modificarCategoria() {
 	    int fila = tablaCategorias.getSelectedRow();
 	    if (fila == -1) {
-	        JOptionPane.showMessageDialog(frame, "Debe seleccionar una categoría.", "Error", JOptionPane.ERROR_MESSAGE);
+	        JOptionPane.showMessageDialog(frame, "Debe seleccionar una categora.", "Error", JOptionPane.ERROR_MESSAGE);
 	        return;
 	    }
 	    String nombreActual = (String) ((DefaultTableModel) tablaCategorias.getModel()).getValueAt(fila, 0);
@@ -631,12 +634,12 @@ public class Principal {
 	private void borrarCategoria() {
 	    int fila = tablaCategorias.getSelectedRow();
 	    if (fila == -1) {
-	        JOptionPane.showMessageDialog(frame, "Debe seleccionar una categoría.", "Error", JOptionPane.ERROR_MESSAGE);
+	        JOptionPane.showMessageDialog(frame, "Debe seleccionar una categoria.", "Error", JOptionPane.ERROR_MESSAGE);
 	        return;
 	    }
 	    String nombre = (String) ((DefaultTableModel) tablaCategorias.getModel()).getValueAt(fila, 0);
 	    int respuesta = JOptionPane.showConfirmDialog(
-	        frame, "Se va a eliminar la categoría: " + nombre,
+	        frame, "se va a eliminar la categoria: " + nombre,
 	        "Confirmar", JOptionPane.YES_NO_OPTION);
 	    if (respuesta == JOptionPane.YES_OPTION) {
 	        try {
@@ -715,7 +718,7 @@ public class Principal {
 	private void modificarItem() {
 	    int numeroFila = tablaItems.getSelectedRow();
 	    if (numeroFila == -1) {
-	        JOptionPane.showMessageDialog(frame, "Debe seleccionar un ítem.", "Error", JOptionPane.ERROR_MESSAGE);
+	        JOptionPane.showMessageDialog(frame, "debe seleccionar un item.", "Error", JOptionPane.ERROR_MESSAGE);
 	        return;
 	    }
 	    int codigo = (int) ((DefaultTableModel) tablaItems.getModel()).getValueAt(numeroFila, 2);
@@ -727,6 +730,7 @@ public class Principal {
 	    } catch (Exception e) {
 	        JOptionPane.showMessageDialog(frame, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	    }
+	    cargarItems();
 	}
 
 	private void crearItem() {
@@ -773,11 +777,16 @@ public class Principal {
 	    model.setRowCount(0);
 
 	    for (Item item : ctrl.listarItems().values()) {
+	        String categoriasStr = item.getCategorias().values().stream()
+	            .map(Categoria::getNombre)
+	            .collect(Collectors.joining(", "));
+
 	        model.addRow(new Object[] {
 	            item.getNombre(),
 	            item.getDescripcion(),
 	            item.getCodigo(),
-	            item.getTipo().getDescripcion()
+	            item.getTipo().getDescripcion(),
+	            categoriasStr
 	        });
 	    }
 	}

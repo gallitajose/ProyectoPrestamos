@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
 
 import Logica.Alerta;
 import Logica.Categoria;
@@ -41,7 +42,7 @@ public class Controlador {
     }
 
 
-    public void crearItem(String descripcion, String tipoDescripcion, String nombre, int codigo) throws Exception {
+    public void crearItem(String descripcion, String tipoDescripcion, String nombre, int codigo, List<String> nombresCategorias) throws Exception {
         if (items.containsKey(codigo)) {
             throw new Exception("Codigo para item ya existe");
         }
@@ -52,9 +53,19 @@ public class Controlador {
         Item nuevo = new Item(descripcion, tipo, nombre, codigo);
         items.put(codigo, nuevo);
         tipo.agregarItem(nuevo);
+        if (nombresCategorias != null) {
+            for (String nombreCat : nombresCategorias) {
+                Categoria cat = categorias.get(nombreCat);
+                if (cat == null) {
+                    throw new Exception("La categoria '" + nombreCat + "' no existe");
+                }
+                nuevo.agregarCategoria(cat);
+                cat.agregarItem(nuevo);
+            }
+        }
     }
 
-    public void editarItem(int codigo, String nuevaDescripcion, String nuevoTipo, String nuevoNombre, int nuevoCodigo) throws Exception {
+    public void editarItem(int codigo, String nuevaDescripcion, String nuevoTipo, String nuevoNombre, int nuevoCodigo, List<String> nombresCategorias) throws Exception {
         Item item = items.get(codigo);
         if (item == null) {
             throw new Exception("No existe un ítem con ese código");
@@ -78,10 +89,11 @@ public class Controlador {
             item.setCodigo(nuevoCodigo);
             items.put(nuevoCodigo, item);
 
-            for (Categoria c : item.getCategorias().values()) {
-                c.eliminarItem(codigo);
-                c.agregarItem(item);
-            }
+            
+        }
+        for (Categoria c : item.getCategorias().values()) {
+            c.eliminarItem(codigo);
+            c.agregarItem(item);
         }
 
         tipo.agregarItem(item);
@@ -279,7 +291,7 @@ public class Controlador {
             throw new Exception("Error al buscar préstamo: no se encontró el préstamo");
         }
         return prestamo;
-    2
+    }
 
     public void hacerPrestamo(String telefono, int idPrestamo) throws Exception {
         Usuario usuario = usuarios.get(telefono);

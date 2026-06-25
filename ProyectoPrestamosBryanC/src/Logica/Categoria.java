@@ -36,6 +36,8 @@ public class Categoria implements Serializable  {
 	}
 
 	
-	//hacer el toString
+	public String toString() {
+	    return nombre;
+	}
 	
 }
