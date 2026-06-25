@@ -1,10 +1,12 @@
 package Logica;
 
 import java.util.Map;
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class Item {
+public class Item implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
 	private int codigo;
 	private String nombre;
 	private String descripcion;

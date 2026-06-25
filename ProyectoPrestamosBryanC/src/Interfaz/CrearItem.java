@@ -59,7 +59,7 @@ public class CrearItem extends JDialog {
 		texCodigo.setColumns(10);
 
 		combTipo = new JComboBox();
-		combTipo.setBounds(39, 182, 30, 22);
+		combTipo.setBounds(10, 182, 86, 22);
 		contentPanel.add(combTipo);
 
 		JLabel Nombre = new JLabel("Ingrese el nombre aqui");

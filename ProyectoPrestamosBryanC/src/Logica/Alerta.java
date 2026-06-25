@@ -1,14 +1,16 @@
 package Logica;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Alerta {
+public class Alerta implements Serializable{
 
+	private static final long serialVersionUID = 1L;
 	private String mensaje;
 	private int frecuencia; 
 	private Date fecha;
 	
-	public Alerta(String mensaje, int frecuencia, Date fecha) {
+	public Alerta(String mensaje, int frecuencia, Date fecha)  {
 		this.frecuencia = frecuencia;
 		this.mensaje = mensaje;
 		this.fecha = fecha;

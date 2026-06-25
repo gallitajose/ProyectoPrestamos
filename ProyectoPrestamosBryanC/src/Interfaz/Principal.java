@@ -72,13 +72,20 @@ public class Principal {
 	}
 
 	public Principal() {
-		initialize();
+	    Controlador.getInstancia().cargarDatos();
+	    initialize();
 	}
 
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 790, 434);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frame.addWindowListener(new java.awt.event.WindowAdapter() {
+		    public void windowClosing(java.awt.event.WindowEvent e) {
+		        Controlador.getInstancia().guardarDatos();
+		        System.exit(0);
+		    }
+		});
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 
 		JTabbedPane tabedMain = new JTabbedPane(JTabbedPane.TOP);
@@ -339,7 +346,7 @@ public class Principal {
 			}
 		) {
 			Class[] columnTypes = new Class[] {
-				String.class, Object.class, Object.class
+				Integer.class, String.class, Object.class
 			};
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
@@ -455,6 +462,9 @@ public class Principal {
 	}
 	private void finalizarPrestamo() {
 	    int fila = table_1.getSelectedRow();
+	    System.out.println("Fila seleccionada: " + fila);
+	    System.out.println("ID: " + ((DefaultTableModel) table_1.getModel()).getValueAt(fila, 0));
+	    System.out.println("Usuario: " + ((DefaultTableModel) table_1.getModel()).getValueAt(fila, 1));
 	    if (fila == -1) {
 	        JOptionPane.showMessageDialog(frame, "debe seleccionar un prestamo.", "Error", JOptionPane.ERROR_MESSAGE);
 	        return;
@@ -462,8 +472,7 @@ public class Principal {
 	    int idPrestamo = (int) ((DefaultTableModel) table_1.getModel()).getValueAt(fila, 0);
 	    String usuario = (String) ((DefaultTableModel) table_1.getModel()).getValueAt(fila, 1);
 	    int respuesta = JOptionPane.showConfirmDialog(
-	        frame, "se va a terminar el prestamo: " + idPrestamo + " de: " + usuario,
-	        "confirmar", JOptionPane.YES_NO_OPTION);
+	        frame, "se va a terminar el prestamo: " + idPrestamo + " de: " + usuario, "confirmar", JOptionPane.YES_NO_OPTION);
 	    if (respuesta == JOptionPane.YES_OPTION) {
 	        try {
 	            Controlador.getInstancia().terminarPrestamo(idPrestamo);
@@ -590,7 +599,7 @@ public class Principal {
 	    }
 	}
 	private void crearCategoria() {
-	    String nombre = JOptionPane.showInputDialog(frame, "Ingrese el nombre de la categoría:");
+	    String nombre = JOptionPane.showInputDialog(frame, "ingrese el nombre de la categoria:");
 	    if (nombre != null && !nombre.trim().isEmpty()) {
 	        try {
 	            Controlador.getInstancia().crearCategoria(nombre.trim());

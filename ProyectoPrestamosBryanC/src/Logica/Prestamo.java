@@ -2,12 +2,13 @@ package Logica;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class Prestamo {
+public class Prestamo implements Serializable {
 
 	private int idPrestamo;
+	private static final long serialVersionUID = 1L;
 	private Date fecha;
 	private Usuario usuario;
 	private Alerta alerta;

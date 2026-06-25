@@ -1,5 +1,9 @@
 package Controladora;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
@@ -268,12 +272,14 @@ public class Controlador {
 
 
     public Prestamo buscarPrestamo(int idPrestamo) throws Exception {
+    	System.out.println("Buscando prestamo con ID: " + idPrestamo);
+        System.out.println("Prestamos existentes: " + prestamos.keySet());
         Prestamo prestamo = prestamos.get(idPrestamo);
         if (prestamo == null) {
             throw new Exception("Error al buscar préstamo: no se encontró el préstamo");
         }
         return prestamo;
-    }
+    2
 
     public void hacerPrestamo(String telefono, int idPrestamo) throws Exception {
         Usuario usuario = usuarios.get(telefono);
@@ -360,20 +366,20 @@ public class Controlador {
 
     public String reporteUsuario() {
         StringBuilder sb = new StringBuilder();
-        sb.append("=== Reporte por Usuario ===\n");
+        sb.append("=== Reporte por usuario ===\n");
 
         usuarios.values().stream()
             .sorted((a, b) -> a.getNombre().compareToIgnoreCase(b.getNombre()))
             .forEach(usuario -> {
                 sb.append("Usuario: ").append(usuario.getNombre());
-                sb.append(" | Teléfono: ").append(usuario.getTelefono());
+                sb.append(" | Telefono: ").append(usuario.getTelefono());
                 sb.append(" | Correo: ").append(usuario.getCorreo()).append("\n");
 
                 if (usuario.getPrestamos().isEmpty()) {
-                    sb.append("  (sin préstamos)\n");
+                    sb.append("  (sin prestamos)\n");
                 } else {
                     for (Prestamo p : usuario.getPrestamos()) {
-                        sb.append("  Préstamo #").append(p.getIdPrestamo());
+                        sb.append("  Prestamo:").append(p.getIdPrestamo());
                         sb.append(" | Fecha: ").append(p.getFecha()).append("\n");
                         for (Item item : p.getItems().values()) {
                             sb.append("    - ").append(item.getNombre()).append("\n");
@@ -395,14 +401,14 @@ public class Controlador {
     }
     public String reporteItem() {
         StringBuilder sb = new StringBuilder();
-        sb.append("=== Reporte por Ítem ===\n");
+        sb.append("=== Reporte por item ===\n");
 
         items.values().stream()
             .sorted((a, b) -> a.getNombre().compareToIgnoreCase(b.getNombre()))
             .forEach(item -> {
-                sb.append("Ítem: ").append(item.getNombre());
-                sb.append(" | Código: ").append(item.getCodigo());
-                sb.append(" | Descripción: ").append(item.getDescripcion());
+                sb.append("Item: ").append(item.getNombre());
+                sb.append(" | Codigo: ").append(item.getCodigo());
+                sb.append(" | Descripcion: ").append(item.getDescripcion());
                 sb.append(" | Tipo: ").append(item.getTipo().getDescripcion());
 
                 Prestamo prestamoActual = buscarPrestamoDeItem(item.getCodigo());
@@ -419,19 +425,19 @@ public class Controlador {
 
     public String reporteCategoria() {
         StringBuilder sb = new StringBuilder();
-        sb.append("=== Reporte por Categoría ===\n");
+        sb.append("=== Reporte por Categoria ===\n");
 
         categorias.values().stream()
             .sorted((a, b) -> a.getNombre().compareToIgnoreCase(b.getNombre()))
             .forEach(categoria -> {
-                sb.append("Categoría: ").append(categoria.getNombre()).append("\n");
+                sb.append("Categoria: ").append(categoria.getNombre()).append("\n");
 
                 if (categoria.getItems().isEmpty()) {
-                    sb.append("  (sin ítems)\n");
+                    sb.append("  (sin items)\n");
                 } else {
                     for (Item item : categoria.getItems().values()) {
                         sb.append("  - ").append(item.getNombre());
-                        sb.append(" (Código: ").append(item.getCodigo()).append(")\n");
+                        sb.append(" (Codigo: ").append(item.getCodigo()).append(")\n");
                     }
                 }
             });
@@ -445,7 +451,7 @@ public class Controlador {
 
     public String reporteTipo() {
         StringBuilder sb = new StringBuilder();
-        sb.append("=== Reporte por Tipo ===\n");
+        sb.append("=== Reporte por tipo ===\n");
 
         tipos.values().stream()
             .sorted((a, b) -> a.getDescripcion().compareToIgnoreCase(b.getDescripcion()))
@@ -453,15 +459,41 @@ public class Controlador {
                 sb.append("Tipo: ").append(tipo.getDescripcion()).append("\n");
 
                 if (tipo.getItems().isEmpty()) {
-                    sb.append("  (sin ítems)\n");
+                    sb.append("  (sin items)\n");
                 } else {
                     for (Item item : tipo.getItems().values()) {
                         sb.append("  - ").append(item.getNombre());
-                        sb.append(" (Código: ").append(item.getCodigo()).append(")\n");
+                        sb.append(" (Codigo: ").append(item.getCodigo()).append(")\n");
                     }
                 }
             });
 
         return sb.toString();
+    }
+    public void guardarDatos() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(
+                new FileOutputStream("datos.dat"))) {
+            oos.writeObject(usuarios);
+            oos.writeObject(items);
+            oos.writeObject(categorias);
+            oos.writeObject(tipos);
+            oos.writeObject(prestamos);
+        } catch (Exception e) {
+            System.out.println("Error al guardar: " + e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void cargarDatos() {
+        try (ObjectInputStream ois = new ObjectInputStream(
+                new FileInputStream("datos.dat"))) {
+            usuarios = (Map<String, Usuario>) ois.readObject();
+            items = (Map<Integer, Item>) ois.readObject();
+            categorias = (Map<String, Categoria>) ois.readObject();
+            tipos = (Map<String, Tipo>) ois.readObject();
+            prestamos = (Map<Integer, Prestamo>) ois.readObject();
+        } catch (Exception e) {
+            System.out.println("No hay datos guardados aun");
+        }
     }
 }

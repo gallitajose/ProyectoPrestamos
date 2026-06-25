@@ -1,11 +1,13 @@
 package Logica;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Categoria {
+public class Categoria implements Serializable  {
 
 	private String nombre;
+	private static final long serialVersionUID = 1L;
 	private Map<Integer, Item> items = new HashMap<>();
 	
 	public Categoria(String nombre) {
