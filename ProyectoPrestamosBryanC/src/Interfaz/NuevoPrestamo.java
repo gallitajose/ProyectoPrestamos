@@ -41,14 +41,14 @@ public class NuevoPrestamo extends JDialog {
 		contentPanel.setLayout(null);
 
 		JLabel lblPersona = new JLabel("Seleccione la persona para el préstamo:");
-		lblPersona.setBounds(192, 48, 280, 20);
+		lblPersona.setBounds(10, 14, 280, 20);
 		contentPanel.add(lblPersona);
 
 		comboBox = new JComboBox<>();
-		comboBox.setBounds(10, 45, 175, 27);
+		comboBox.setBounds(10, 45, 300, 27);
 		contentPanel.add(comboBox);
 
-		
+		// Cargar usuarios en el combo (nombre - telefono)
 		Controlador ctrl = Controlador.getInstancia();
 		for (Logica.Usuario u : ctrl.listarUsuarios().values()) {
 			comboBox.addItem(u.getNombre() + " - " + u.getTelefono());
@@ -67,21 +67,48 @@ public class NuevoPrestamo extends JDialog {
 		cancelButton.setActionCommand("Cancel");
 		buttonPane.add(cancelButton);
 
-		
+		// Lógica botón OK
 		okButton.addActionListener(e -> {
 			try {
 				if (comboBox.getSelectedItem() == null) {
-					JOptionPane.showMessageDialog(this, "debe seleccionar una persona", "error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(this, "Debe seleccionar una persona", "Error", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				
 				String seleccion = (String) comboBox.getSelectedItem();
 				String telefono = seleccion.split(" - ")[1];
 
 				int idPrestamo = ctrl.generarIdPrestamo();
 				ctrl.hacerPrestamo(telefono, idPrestamo);
-				JOptionPane.showMessageDialog(this, "Prestamo #" + idPrestamo + " creado");
+
+				// Preguntar si desea agregar alerta
+				int respuesta = JOptionPane.showConfirmDialog(
+					this, "¿Desea agregar una alerta a este préstamo?",
+					"Alerta", JOptionPane.YES_NO_OPTION);
+
+				if (respuesta == JOptionPane.YES_OPTION) {
+					String mensaje = JOptionPane.showInputDialog(this, "Ingrese el mensaje de la alerta:");
+					if (mensaje != null && !mensaje.trim().isEmpty()) {
+						String[] opciones = {"Una sola vez", "Recurrente"};
+						int tipo = JOptionPane.showOptionDialog(
+							this, "¿Qué tipo de alerta desea?", "Tipo de alerta",
+							JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+							null, opciones, opciones[0]);
+
+						int frecuencia = 0;
+						if (tipo == 1) {
+							String dias = JOptionPane.showInputDialog(this, "¿Cada cuántos días?");
+							if (dias != null && !dias.trim().isEmpty()) {
+								frecuencia = Integer.parseInt(dias.trim());
+							}
+						}
+						ctrl.agregarAlertaPrestamo(idPrestamo, mensaje.trim(), frecuencia);
+					}
+				}
+
+				JOptionPane.showMessageDialog(this, "Préstamo #" + idPrestamo + " creado exitosamente");
 				dispose();
+			} catch (NumberFormatException ex) {
+				JOptionPane.showMessageDialog(this, "La frecuencia debe ser un número entero", "Error", JOptionPane.ERROR_MESSAGE);
 			} catch (Exception ex) {
 				JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			}

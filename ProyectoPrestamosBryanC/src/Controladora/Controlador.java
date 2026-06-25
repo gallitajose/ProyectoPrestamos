@@ -495,7 +495,6 @@ public class Controlador {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void cargarDatos() {
         try (ObjectInputStream ois = new ObjectInputStream(
                 new FileInputStream("datos.dat"))) {
@@ -506,6 +505,6 @@ public class Controlador {
             prestamos = (Map<Integer, Prestamo>) ois.readObject();
         } catch (Exception e) {
             System.out.println("No hay datos guardados aun");
-        }
+        }	
     }
 }
